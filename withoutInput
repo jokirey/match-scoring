@@ -1,0 +1,96 @@
+// Для решения тестового задания был выбран язык C# 
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+
+class Program_withInput
+{
+    static void Main()
+    {
+        Console.OutputEncoding = Encoding.UTF8;
+        Console.WriteLine("Дан список с результатами матчей (\"3:1\", \"2:2\", \"0:1\", \"4:2\", \"3:a\", \"3- 12\")." +
+          "\nИсходя из логики, что за победу в домашних матчах дается 3 очка, за ничью 1 очко, за поражение 0 очков." +
+          "\nВывести на экран количество очков, набранных каждой командой по итогам проведенных матчей.\n");
+        List<string> matchResults = new List<string>();
+        string[] matches = { "3:1", "2:2", "0:1", "4:2", "3:a", "3- 12" };
+        // Проверки и добавление валидных результатов в список
+        foreach (var match in matches)
+        {
+            string trimmedMatch = match.Trim();
+
+            if (trimmedMatch.Length == 0)
+            {
+                Console.WriteLine("Ошибка: нет ввода данных.");
+                continue;
+            }
+
+            string result = trimmedMatch.Trim('"');
+            string[] parts = result.Split(':');
+
+            if (parts.Length != 2 || parts[0].Contains(" ") || parts[1].Contains(" "))
+            {
+                Console.WriteLine("Ошибка: ввод данных не соответствует формату \"x:y\".");
+                continue;
+            }
+
+            int homeTeamScore, awayTeamScore;
+            if (!int.TryParse(parts[0], out homeTeamScore) || !int.TryParse(parts[1], out awayTeamScore))
+            {
+                Console.WriteLine("Ошибка: ввод данных должен содержать только целые числовые значения и знак (:) между ними.");
+                continue;
+            }
+
+            if (homeTeamScore < 0 || awayTeamScore < 0)
+            {
+                Console.WriteLine("Ошибка: ввод данных должен содержать только положительные целые числовые значения.");
+                continue;
+            }
+
+            matchResults.Add(result);
+        }
+
+        int homeTeamPoints = 0;
+        int awayTeamPoints = 0;
+        int homeTeamPoint = 0;
+        int awayTeamPoint = 0;
+        int i = 0;
+
+        // Расчет и вывод очков и баллов для каждой команды
+        foreach (var result in matchResults)
+        {
+            i++;
+            string[] parts = result.Split(':');
+            int homeScore = int.Parse(parts[0]);
+            int awayScore = int.Parse(parts[1]);
+            if (homeScore > awayScore)
+            {
+                homeTeamPoint = 3;
+                awayTeamPoint = 0;
+            }
+            else if (homeScore == awayScore)
+            {
+                homeTeamPoint = 1;
+                awayTeamPoint = 1;
+            }
+            else
+            {
+                homeTeamPoint = 0;
+                awayTeamPoint = 3;
+
+            }
+            awayTeamPoints += awayTeamPoint;
+            homeTeamPoints += homeTeamPoint;
+            Console.WriteLine($"\nВ матче {i}:");
+            Console.WriteLine($"Команда 'хозяева' забила {homeScore} голлов и набрала {homeTeamPoint} очков.");
+            Console.WriteLine($"Команда 'противники' забила {awayScore} голлов и набрала {awayTeamPoint} очков.");
+        }
+        Console.WriteLine("\nОбщее количество очков за все матчи:");
+        Console.WriteLine($"Команда 'хозяева' набрала {homeTeamPoints} очков.");
+        Console.WriteLine($"Команда 'противники' набрали {awayTeamPoints} очков.");
+
+        Console.ReadLine();
+    }
+}
+
+
